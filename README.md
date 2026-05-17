@@ -7,7 +7,7 @@ The project demonstrates authentication (JWT), layered architecture (DTOs), and 
 
 ---
 
-## 🚀 Features
+##  Features
 
 - User registration with password encryption (BCrypt)
 - User login with JWT authentication
