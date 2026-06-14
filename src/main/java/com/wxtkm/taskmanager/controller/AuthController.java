@@ -3,6 +3,7 @@ package com.wxtkm.taskmanager.controller;
 import com.wxtkm.taskmanager.dto.*;
 import com.wxtkm.taskmanager.model.User;
 import com.wxtkm.taskmanager.repository.UserRepository;
+import com.wxtkm.taskmanager.service.AuthService;
 import com.wxtkm.taskmanager.service.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,32 +15,14 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class AuthController {
 
-    private final UserRepository userRepository;
-    private final JwtService jwtService;
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final AuthService authService;
 
-    public AuthController(UserRepository userRepository, JwtService jwtService) {
-        this.userRepository = userRepository;
-        this.jwtService = jwtService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO dto) {
-
-        Optional<User> userOpt = userRepository.findByUsername(dto.getUsername());
-
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("User not found");
-        }
-
-        User user = userOpt.get();
-
-        if (!encoder.matches(dto.getPassword(), user.getPassword())) {
-            return ResponseEntity.badRequest().body("Wrong password");
-        }
-
-        String token = jwtService.generateToken(user.getUsername());
-
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto) {
+        return ResponseEntity.ok(authService.login(dto));
     }
 }
