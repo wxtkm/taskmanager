@@ -17,13 +17,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
 
-                        // публичные
                         .requestMatchers("/api/register", "/api/login").permitAll()
 
-                        // 🔐 ТОЛЬКО ADMIN
                         .requestMatchers("/api/users").hasRole("ADMIN")
 
-                        // остальные
                         .anyRequest().authenticated()
                 )
                 .httpBasic(httpBasic -> {});

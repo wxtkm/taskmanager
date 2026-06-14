@@ -36,7 +36,7 @@ public class JwtService {
 
     public boolean isTokenValid(String token) {
         try {
-            extractUsername(token); // если токен битый — упадёт exception
+            extractUsername(token);
             return true;
         } catch (Exception e) {
             return false;

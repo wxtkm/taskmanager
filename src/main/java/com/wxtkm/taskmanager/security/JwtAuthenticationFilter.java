@@ -50,7 +50,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtService.isTokenValid(token)) {
 
-                // 🔥 берём пользователя из БД
                 User appUser = userRepository.findByUsername(username)
                         .orElse(null);
 
@@ -59,11 +58,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     return;
                 }
 
-                // 🔥 роль пользователя
                 List<SimpleGrantedAuthority> authorities =
                         List.of(new SimpleGrantedAuthority(appUser.getRole()));
 
-                // 🔥 Spring UserDetails
                 UserDetails userDetails =
                         new org.springframework.security.core.userdetails.User(
                                 appUser.getUsername(),
