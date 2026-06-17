@@ -1,5 +1,3 @@
-
-
 # TaskManager Backend API
 
 A RESTful backend application built with Spring Boot and PostgreSQL.  
@@ -7,33 +5,36 @@ The project demonstrates authentication (JWT), layered architecture (DTOs), and 
 
 ---
 
-##  Features
+## Features
 
 - User registration with password encryption (BCrypt)
 - User login with JWT authentication
-- Get all users (secured endpoint)
+- Role-based authorization (ADMIN / USER)
+- Task management (CRUD)
 - DTO-based architecture (request/response separation)
 - Swagger API documentation
 - PostgreSQL database integration
 - Spring Data JPA
+- Dockerized deployment
 - RESTful API design
 
 ---
 
-##  Tech Stack
+## Tech Stack
 
-- Java
+- Java 21
 - Spring Boot
 - Spring Security
 - JWT (JSON Web Token)
 - Spring Data JPA
 - PostgreSQL
 - Swagger (springdoc-openapi)
+- Docker
 - Maven
 
 ---
 
-##  Authentication
+## Authentication
 
 After successful login, the API returns a JWT token:
 
@@ -41,159 +42,126 @@ After successful login, the API returns a JWT token:
 {
   "token": "eyJhbGciOiJIUzI1NiIs..."
 }
-````
+```
 
-To access protected endpoints, add the token to request headers:
-
+To access protected endpoints:
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 ---
-
 ## API Endpoints
-
 ### Register user
-
 ```
 POST /api/register
 ```
-
-Request body:
-
-```json
-{
-  "username": "test",
-  "password": "123"
-}
-```
-
----
-
 ### Login user
-
 ```
 POST /api/login
 ```
-
-Request body:
-
-```json
-{
-  "username": "test",
-  "password": "123"
-}
-```
-
-Response:
-
-```json
-{
-  "token": "jwt_token_here"
-}
-```
-
----
-
-### Get all users (protected)
-
+### Get all users (ADMIN only)
 ```
 GET /api/users
 ```
-
-Requires JWT token.
-
+### Tasks (authenticated)
+```
+GET /api/tasks
+POST /api/tasks
+PUT /api/tasks/{id}
+DELETE /api/tasks/{id}
+```
 ---
-
-##  Swagger UI
-
-After running the project, open:
-
+## Swagger UI
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
 
-You can test all endpoints directly from browser.
-
 ---
+## Database Setup (Local)
 
-##  Database Setup
-
-1. Install PostgreSQL
-2. Create database:
-
+### Create database:
 ```sql
 CREATE DATABASE taskdb;
 ```
-
-3. Update `application.yml`:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/taskdb
-    username: postgres
-    password: your_password
-```
-
 ---
+## Environment Variables (IMPORTANT FOR DEPLOY)
 
-## ▶ How to Run
+### When deploying (Render / Railway), set:
+```
+SPRING_DATASOURCE_URL=jdbc:postgresql://<host>:5432/<db>
+SPRING_DATASOURCE_USERNAME=<username>
+SPRING_DATASOURCE_PASSWORD=<password>
 
+JWT_SECRET=your_secret_key
+```
+---
+## Docker Deployment
+### Build and run:
 ```bash
+docker compose up --build
+```
+---
+## Docker Compose Example
+```yaml
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16
+    container_name: taskmanager-db
+    environment:
+      POSTGRES_DB: taskdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    container_name: taskmanager-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/taskdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+```
+---
+## How to Run Locally
+````Bash
+mvn clean package
 mvn spring-boot:run
-```
-
-or run `TaskmanagerApplication.java` from your IDE.
-
+````
 ---
-
 ## Architecture
-
-```
-controller → dto → service → repository → database
-```
-
+````
+controller → service → repository → database
+````
+### Security layer:
+````
+JWT Filter → Security Config → Controller → Service
+````
 ---
+## Purpose
+### This project was built to practice:
 
-##  Purpose
-
-This project was built to practice:
-
-* REST API development
-* JWT authentication
-* Clean architecture with DTOs
-* Database integration with PostgreSQL
-* API documentation using Swagger
-
+- REST API development
+- JWT authentication
+- Role-based security
+- Clean architecture (DTO + Service layer)
+- PostgreSQL integration
+- Docker deployment
+- Swagger documentation
 ---
+## Deployment Ready Status
 
-## Notes
-
-* Passwords are securely stored using BCrypt hashing
-* JWT is used for stateless authentication
-* Swagger UI is enabled for API testing
-* DTOs are used to separate internal models from API layer
-
----
-
-## Screenshots
-
-Add screenshots here:
-
-* ### Swagger UI
-![img_1.png](img_1.png)
-* ### API responses
-Register user:
-![img_2.png](img_2.png)
-Login user:
-![img_3.png](img_3.png)
-Get all users:
-![img_4.png](img_4.png)
-(Response body is empty because there are no users in the database)
-
----
-
-##  Author
-
+- Dockerized
+- Stateless JWT authentication
+- PostgreSQL support
+- Environment variables configured
+- Ready for Render / Railway / Fly.io deployment
+--- 
+# Author
 Backend learning project for portfolio and job applications.
