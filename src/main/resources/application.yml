@@ -1,6 +1,7 @@
 spring:
   application:
     name: taskmanager
+
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -10,3 +11,9 @@ spring:
     hibernate:
       ddl-auto: update
       show-sql: true
+
+  server:
+    port: 8080
+
+  jwt:
+    secret: ${JWT_SECRET}
