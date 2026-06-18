@@ -1,6 +1,8 @@
 package com.wxtkm.taskmanager.config;
 
 import com.wxtkm.taskmanager.security.JwtAuthenticationFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,8 +18,11 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
+
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        log.info("SECURITY CONFIG LOADED");
     }
 
     @Bean
@@ -27,9 +32,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/register",
@@ -37,7 +39,6 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
-                        .requestMatchers("/api/users").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
