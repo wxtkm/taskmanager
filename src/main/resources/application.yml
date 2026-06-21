@@ -1,7 +1,7 @@
 spring:
   application:
     name: taskmanager
-    admin-token: ${ADMIN_TOKEN}
+
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}
@@ -19,3 +19,5 @@ spring:
   jwt:
     secret: ${JWT_SECRET}
 
+  app:
+    admin-token: ${ADMIN_TOKEN}
