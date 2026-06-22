@@ -13,11 +13,11 @@ spring:
       ddl-auto: update
       show-sql: true
 
-  server:
-    port: ${PORT:8080}
+server:
+  port: ${PORT:8080}
 
-  jwt:
-    secret: ${JWT_SECRET}
+jwt:
+  secret: ${JWT_SECRET}
 
-  app:
-    admin-token: ${ADMIN_TOKEN}
+app:
+  admin-token: ${ADMIN_TOKEN}
