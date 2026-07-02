@@ -48,25 +48,13 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
 
                 .authorizeHttpRequests(auth -> auth
-
-                        // OPTIONS (preflight браузера)
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // публичные endpoints
-                        .requestMatchers(
-                                "/api/register",
-                                "/api/login",
-                                "/api/admin/login",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
-                        ).permitAll()
-
-                        // всё остальное защищено
+                        .requestMatchers(HttpMethod.GET, "/api/projects").permitAll()
+                        .requestMatchers("/api/admin/login").permitAll()
                         .anyRequest().authenticated()
-                )
+                );
 
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(adminTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                //.addFilterBefore(adminTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
