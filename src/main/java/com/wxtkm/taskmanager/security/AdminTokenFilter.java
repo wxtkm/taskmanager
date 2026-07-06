@@ -25,23 +25,28 @@ public class AdminTokenFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        if (path.startsWith("/api/admin/login")
-                || path.startsWith("/api/register")
-                || path.startsWith("/api/login")
-                || path.startsWith("/swagger-ui")
-                || path.startsWith("/v3/api-docs")) {
-
+        if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (path.startsWith("/api/projects")
-                && request.getMethod().equalsIgnoreCase("POST")) {
+        if (
+                path.equals("/api/projects")
+                        && request.getMethod().equalsIgnoreCase("POST")
+        ) {
 
             String token = request.getHeader("X-ADMIN-TOKEN");
 
+            System.out.println("EXPECTED: " + adminToken);
+            System.out.println("RECEIVED: " + token);
+
             if (token == null || !token.equals(adminToken)) {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+
+                response.sendError(
+                        HttpServletResponse.SC_FORBIDDEN,
+                        "Invalid admin token"
+                );
+
                 return;
             }
         }

@@ -1,12 +1,11 @@
 package com.wxtkm.taskmanager.config;
 
 import com.wxtkm.taskmanager.security.AdminTokenFilter;
-import com.wxtkm.taskmanager.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,16 +16,13 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AdminTokenFilter adminTokenFilter;
     private final CorsConfigurationSource corsConfigurationSource;
 
     public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter,
             AdminTokenFilter adminTokenFilter,
             CorsConfigurationSource corsConfigurationSource
     ) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.adminTokenFilter = adminTokenFilter;
         this.corsConfigurationSource = corsConfigurationSource;
     }
@@ -37,6 +33,10 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
 
+                .cors(cors ->
+                        cors.configurationSource(corsConfigurationSource)
+                )
+
                 .formLogin(AbstractHttpConfigurer::disable)
 
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -45,16 +45,16 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
-
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/projects").permitAll()
-                        .requestMatchers("/api/admin/login").permitAll()
-                        .anyRequest().authenticated()
-                );
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        .anyRequest().permitAll()
+                )
 
-                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                //.addFilterBefore(adminTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(
+                        adminTokenFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
     }
